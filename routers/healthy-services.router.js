@@ -1,10 +1,10 @@
 import { Router } from "express"
 import { createSaltMolecule, deleteSaltMolecule, getSaltMolecule, getSaltMoleculeById, updateSaltMolecule } from "../controllers/healthy-services.controller.js";
-import verifyToken from "../middlewares/auth.js";
+// import verifyToken from "../middlewares/auth.js";
 
 
 const router =Router();
-router.use(verifyToken)
+// router.use(verifyToken)
 router.post('/salt-molecule',createSaltMolecule)
 router.get('/salt-molecule',getSaltMolecule)
 router.get('/salt-molecule/:id', getSaltMoleculeById);
