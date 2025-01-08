@@ -30,7 +30,7 @@ const MedicineSchema = new mongoose.Schema(
       type: String,
     },
     status: {
-        type: String,
+      type: String,
     },
     manufacturer: {
       name: {
@@ -57,9 +57,7 @@ const MedicineSchema = new mongoose.Schema(
 
     pricing: {
       mrp: {
-        type: Number,
-        required: true,
-        min: 0,
+        type: String,
       },
       discount: {
         type: Number,
@@ -76,18 +74,19 @@ const MedicineSchema = new mongoose.Schema(
         type: String,
         required: true,
       },
+      mrp_per_unit: {
+        type: String,
+        required: true,
+      },
       return_policy: {
         returnable: {
-          type: Boolean,
-          default: false,
+          type: String,
         },
         return_window: {
-          type: Number,
-          min: 0,
+          type: String,
         },
         open_box: {
-          type: Boolean,
-          default: false,
+          type: String,
         },
       },
     },

@@ -110,3 +110,115 @@ export const getMedicines = async (req, res) => {
     res.status(500).json({ message: "Error fetching medicines" });
   }
 };
+
+export const createMedicines = async (req, res) => {
+  try {
+    console.log(req.body,'lslsl');
+    
+    const {
+      medicineName,
+      packageDescription,
+      medicineType,
+      stock,
+      prescription_type,
+      status,
+      manufacturer,
+      salt_molecule,
+      therapeutic_classification,
+      therapeutic_uses,
+      images,
+      description,
+      mrp_per_unit,
+      author_details,
+      warning_and_precaution,
+      direction_and_uses,
+      side_effects,
+      storage_disposal,
+      dosage,
+      reference,
+      faqs,
+      mrp,
+      discount,
+      quantity,
+      unit,
+      return_policy,
+      open_box
+    } = req.body;
+
+    const newMedicine = new Medicine({
+      name: medicineName,
+      package_description: packageDescription,
+      type: medicineType,
+      stock: stock,
+      prescription_type: prescription_type,
+      status: status,
+      manufacturer: {
+        name: manufacturer.label,
+        address: manufacturer.data.manufacturer_address,
+        country: manufacturer.data.country_origin,
+        customer_care_email: manufacturer.data.customer_email,
+      },
+      pricing: {
+        mrp: mrp,
+        discount: discount,
+        quantity: quantity,
+        mrp_per_unit:mrp_per_unit,
+        unit: unit.label,
+        return_policy: {
+          returnable: return_policy,
+          open_box: open_box,
+        },
+      },
+      molecule_details: {
+        salt_molecule: salt_molecule.label,
+        therapeutic_classification: therapeutic_classification,
+        therapeutic_uses: therapeutic_uses,
+      },
+      variants: [], 
+      faq: {
+        faq_description: description,
+        author_details: author_details,
+        warning_and_precaution: warning_and_precaution,
+        direction_uses: direction_and_uses,
+        side_effect: side_effects,
+        storage_disposal: storage_disposal,
+        dosage: dosage,
+        reference: reference,
+        question_answers: faqs,
+      },
+      images: images.map(image => ({
+        url: image, 
+      })),
+    });
+
+    const ress=await newMedicine.save();
+    console.log(ress,'-3-3');
+    
+
+    return res.status(201).json({
+      message: 'Medicine created successfully!',
+      data: newMedicine,
+      success:true,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      message: 'Error occurred while creating the medicine.',
+      error: err.message,
+    });
+  }
+};
+export const getMedicinesById = async (req, res) => {
+  const { id } = req.params; 
+  try {
+    const MedicineData = await Medicine.findOne({_id:id});
+    if (!MedicineData) {
+      return res.status(404).json({ success: false, message: "Medicine not found" });
+    }
+    res.status(200).json({ success: true, data: MedicineData });
+  } catch (err) {
+    console.error("Error fetching Medicine:", err);
+    res.status(500).json({ success: false, message: err.message || "An error occurred" });
+  }
+};
+

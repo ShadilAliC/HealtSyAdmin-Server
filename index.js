@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import authRouter from "./routers/auth.router.js";
-import userRouter from "./routers/user.router.js";
+import commonRouter from "./routers/common.router.js";
 import healthyServicesRouter from "./routers/healthy-services.router.js";
 
 
@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use("/auth", authRouter);
-app.use("/", userRouter);
+app.use("/", commonRouter);
 app.use("/healthsy-services", healthyServicesRouter);
 
 

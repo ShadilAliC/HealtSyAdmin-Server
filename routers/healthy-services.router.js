@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getMedicines } from "../controllers/healthy-services.controller.js";
+import { createMedicines, getMedicines, getMedicinesById } from "../controllers/healthy-services.controller.js";
 import {
   createManufacturer,
   deleteManufacturer,
@@ -48,14 +48,17 @@ router.get("/unit/:id", getUnitById);
 router.patch("/unit/:id", updateUnit);
 router.delete("/unit/:id", deleteUnit);
 
-
-router.get("/medicines", getMedicines);
-
 // Product Type
 router.post("/product-type", createProductType);
 router.get("/product-type", getProductType);
 router.get("/product-type/:id", getProductTypeById);
 router.patch("/product-type/:id", updateProductType);
 router.delete("/product-type/:id", deleteProductType);
+
+// Medicines
+router.get("/medicines", getMedicines);
+router.post("/medicines", createMedicines);
+router.get("/medicines/:id", getMedicinesById);
+
 
 export default router;
