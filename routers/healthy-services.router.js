@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createMedicines, getMedicines, getMedicinesById } from "../controllers/healthy-services.controller.js";
+import { createMedicines, deleteMedicines, getMedicines, getMedicinesById, updateMedicine } from "../controllers/healthy-services.controller.js";
 import {
   createManufacturer,
   deleteManufacturer,
@@ -59,6 +59,9 @@ router.delete("/product-type/:id", deleteProductType);
 router.get("/medicines", getMedicines);
 router.post("/medicines", createMedicines);
 router.get("/medicines/:id", getMedicinesById);
+router.patch("/medicines/:id", updateMedicine);
+router.delete("/medicines/:id", deleteMedicines);
+
 
 
 export default router;

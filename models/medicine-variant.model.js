@@ -13,7 +13,7 @@ const VariantSchema = new mongoose.Schema({
     {
       url: {
         type: String,
-        required: true,
+        required: [true, "Image URL is required"],
       },
     },
   ],
