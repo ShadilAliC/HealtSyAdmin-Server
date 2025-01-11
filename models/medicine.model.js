@@ -6,17 +6,9 @@ const MedicineSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
       index: true,
     },
-    images: [
-      {
-        url: {
-          type: String,
-          required: true,
-        },
-      },
-    ],
+    images: [String],
     package_description: {
       type: String,
     },
@@ -35,7 +27,6 @@ const MedicineSchema = new mongoose.Schema(
     manufacturer: {
       name: {
         type: String,
-        required: true,
       },
       address: {
         type: String,
@@ -67,16 +58,13 @@ const MedicineSchema = new mongoose.Schema(
       },
       quantity: {
         type: Number,
-        required: true,
         min: 0,
       },
       unit: {
         type: String,
-        required: true,
       },
       mrp_per_unit: {
         type: String,
-        required: true,
       },
       return_policy: {
         returnable: {

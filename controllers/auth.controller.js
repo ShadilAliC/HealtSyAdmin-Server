@@ -4,7 +4,6 @@ import UserDb from "../models/user.model.js";
 import twilio from "twilio";
 import jwt from "jsonwebtoken";
 import { generateOTP } from "../services/otp.service.js";
-console.log(process.env.account_SID, process.env.authToken,'process.env.account_SID, process.env.authToken');
 
 const client = twilio(process.env.account_SID, process.env.authToken);
 
@@ -21,9 +20,7 @@ export const sendSMS = async (req, res) => {
       "Sanitized phone number with country code:",
       phoneWithCountryCode
     );
-
     const currentTime = Date.now();
-
     const existPhone = await UserDb.findOne({ phone: phoneWithCountryCode });
     let OTP;
     if (existPhone && existPhone.isVerified && existPhone.email) {
@@ -56,8 +53,11 @@ export const sendSMS = async (req, res) => {
     }
 
     try {
-      console.log( process.env.Twilio_Test_Number,' process.env.Twilio_Test_Number');
-      
+      console.log(
+        process.env.Twilio_Test_Number,
+        " process.env.Twilio_Test_Number"
+      );
+
       const message = await client.messages.create({
         body: `Your Verification code is ${OTP}`,
         from: process.env.Twilio_Test_Number,
@@ -182,6 +182,3 @@ export const registerUser = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
-
-

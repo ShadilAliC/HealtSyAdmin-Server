@@ -3,7 +3,6 @@ import { registerUser, sendSMS, verifyCode } from "../controllers/auth.controlle
 
 const router =Router();
 
-
 router.post('/sent-otp',sendSMS)
 router.post('/verify-otp',verifyCode)
 router.post('/register',registerUser)

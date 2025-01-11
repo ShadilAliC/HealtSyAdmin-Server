@@ -22,10 +22,8 @@ import {
   updateUnit,
 } from "../controllers/healthSyServices/masters/unit.js";
 import { createProductType, deleteProductType, getProductType, getProductTypeById, updateProductType } from "../controllers/healthSyServices/masters/productType.js";
-// import verifyToken from "../middlewares/auth.js";
 
 const router = Router();
-// router.use(verifyToken)
 
 // Salt-Molecule
 router.post("/salt-molecule", createSaltMolecule);

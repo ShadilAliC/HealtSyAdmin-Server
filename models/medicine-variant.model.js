@@ -3,11 +3,9 @@ import mongoose from "mongoose";
 const VariantSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
   },
   package_description: {
     type: String,
-    required: true,
   },
   images: [
     {
@@ -19,7 +17,6 @@ const VariantSchema = new mongoose.Schema({
   ],
   mrp: {
     type: Number,
-    required: true,
     min: 0,
   },
   discount: {
@@ -30,17 +27,14 @@ const VariantSchema = new mongoose.Schema({
   },
   quantity: {
     type: Number,
-    required: true,
     min: 0,
   },
   mrp_per_unit: {
     type: Number,
-    required: true,
     min: 0,
   },
   unit: {
     type: String,
-    required: true,
   },
 });
 

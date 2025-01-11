@@ -1,8 +1,6 @@
 import Medicine from "../models/medicine.model.js";
 export const getMedicines = async (req, res) => {
   try {
-    console.log(req.query,'dldld');
-    
     const { sort, filterData, page = 1, limit = 10, search } = req.query;
     let sortObj = {};
     switch (sort) {
@@ -42,8 +40,6 @@ export const getMedicines = async (req, res) => {
       } else {
         return res.status(400).json({ message: "Invalid filterData format" });
       }
-      console.log(filters, "oeoeoeo");
-
       if (Array.isArray(filters)) {
         filters.forEach((filter) => {
           switch (filter.category) {
@@ -72,7 +68,7 @@ export const getMedicines = async (req, res) => {
               filterObj.prescription_type = filter.value;
               break;
             case "Status":
-              filterObj.status = filter.value;
+              filterObj.status = filter.value == "In-Active" ? false : true;
               break;
           }
         });
@@ -118,22 +114,17 @@ export const getMedicines = async (req, res) => {
 
 export const createMedicines = async (req, res) => {
   try {
-    console.log(req.body,'lslsl');
-    
     const {
-      medicineName,
-      packageDescription,
-      medicineType,
+      name,
+      package_description,
+      type,
       stock,
       prescription_type,
       status,
+      pricing,
       manufacturer,
-      salt_molecule,
-      therapeutic_classification,
-      therapeutic_uses,
       images,
       description,
-      mrp_per_unit,
       author_details,
       warning_and_precaution,
       direction_and_uses,
@@ -142,61 +133,62 @@ export const createMedicines = async (req, res) => {
       dosage,
       reference,
       faqs,
-      mrp,
-      discount,
-      quantity,
+      molecule_details,
       variants,
-      unit,
-      return_policy,
-      open_box
     } = req.body;
     const validatedVariants = variants.map((variant) => {
       const formattedImages = Array.isArray(variant.images)
         ? variant.images.map((url) => ({ url }))
         : [{ url: variant.images }];
-
       return {
         ...variant,
         images: formattedImages,
-        unit: variant.unit?.value || variant.unit, // Normalize unit
+        unit: variant.unit?.value || variant.unit,
       };
     });
-
-    // Validate images
-    // const formattedImages = images.map((url) => ({
-    //   url,
-    // }));
-
+    const processImages = (images) => {
+      return images
+        .map((image) => {
+          if (typeof image === "string") {
+            return image;
+          }
+          if (image.url) {
+            return image.url;
+          }
+          return null;
+        })
+        .filter(Boolean);
+    };
     const newMedicine = new Medicine({
-      name: medicineName,
-      package_description: packageDescription,
-      type: medicineType,
+      name: name,
+      package_description: package_description,
+      type: type,
       stock: stock,
       prescription_type: prescription_type,
       status: status,
       manufacturer: {
-        name: manufacturer.label,
-        address: manufacturer.data.manufacturer_address,
-        country: manufacturer.data.country_origin,
-        customer_care_email: manufacturer.data.customer_email,
+        name: manufacturer.name,
+        address: manufacturer.address,
+        country: manufacturer.country,
+        customer_care_email: manufacturer.customer_care_email,
       },
       pricing: {
-        mrp: mrp,
-        discount: discount,
-        quantity: quantity,
-        mrp_per_unit:mrp_per_unit,
-        unit: unit.label,
+        mrp: pricing.mrp,
+        discount: pricing.discount,
+        quantity: pricing.quantity,
+        mrp_per_unit: pricing.mrp_per_unit,
+        unit: pricing.unit,
         return_policy: {
-          returnable: return_policy,
-          open_box: open_box,
+          returnable: pricing.return_policy.returnable,
+          open_box: pricing.return_policy.open_box,
         },
       },
       molecule_details: {
-        salt_molecule: salt_molecule.label,
-        therapeutic_classification: therapeutic_classification,
-        therapeutic_uses: therapeutic_uses,
+        salt_molecule: molecule_details.salt_molecule,
+        therapeutic_classification: molecule_details.therapeutic_classification,
+        therapeutic_uses: molecule_details.therapeutic_uses,
       },
-      variants:validatedVariants,
+      variants: validatedVariants,
       faq: {
         faq_description: description,
         author_details: author_details,
@@ -208,60 +200,55 @@ export const createMedicines = async (req, res) => {
         reference: reference,
         question_answers: faqs,
       },
-      images: images.map(image => ({
-        url: image, 
-      })),
+      images: processImages(images),
     });
 
-    const ress=await newMedicine.save();
-    console.log(ress,'-3-3');
-    
-
+    const ress = await newMedicine.save();
     return res.status(201).json({
-      message: 'Medicine created successfully!',
+      message: "Medicine created successfully!",
       data: newMedicine,
-      success:true,
+      success: true,
     });
   } catch (err) {
     console.error(err);
     return res.status(500).json({
-      message: 'Error occurred while creating the medicine.',
+      message: "Error occurred while creating the medicine.",
       error: err.message,
     });
   }
 };
 export const getMedicinesById = async (req, res) => {
-  const { id } = req.params; 
+  const { id } = req.params;
   try {
-    const MedicineData = await Medicine.findOne({_id:id});
+    const MedicineData = await Medicine.findOne({ _id: id });
     if (!MedicineData) {
-      return res.status(404).json({ success: false, message: "Medicine not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Medicine not found" });
     }
     res.status(200).json({ success: true, data: MedicineData });
   } catch (err) {
     console.error("Error fetching Medicine:", err);
-    res.status(500).json({ success: false, message: err.message || "An error occurred" });
+    res
+      .status(500)
+      .json({ success: false, message: err.message || "An error occurred" });
   }
 };
 export const updateMedicine = async (req, res) => {
   try {
-    console.log(req.body,'ldldld');
-    
-    const { id } = req.params; // Extract the ID from the URL parameters
+    const { id } = req.params;
     const {
-      medicineName,
-      packageDescription,
-      medicineType,
+      name,
+      package_description,
+      type,
       stock,
       prescription_type,
       status,
+      pricing,
       manufacturer,
-      salt_molecule,
-      therapeutic_classification,
-      therapeutic_uses,
       images,
+      variants,
       description,
-      mrp_per_unit,
       author_details,
       warning_and_precaution,
       direction_and_uses,
@@ -270,47 +257,69 @@ export const updateMedicine = async (req, res) => {
       dosage,
       reference,
       faqs,
-      mrp,
-      discount,
-      quantity,
-      unit,
-      return_policy,
-      open_box
+      molecule_details,
     } = req.body;
-    const unitValue = unit?.label || unit;
-    const salt_moleculeValue = salt_molecule?.label;
+    const validatedVariants = variants.map((variant) => {
+      const formattedImages = Array.isArray(variant.images)
+        ? variant.images.map((image) =>
+            typeof image === "string" ? { url: image } : image
+          )
+        : [{ url: variant.images }];
+      return {
+        ...variant,
+        images: formattedImages,
+        unit: variant.unit?.value || variant.unit,
+      };
+    });
+
+    const processImages = (images) => {
+      return images
+        .map((image) => {
+          if (typeof image === "string") {
+            return image;
+          }
+          if (image.url) {
+            return image.url;
+          }
+          return null;
+        })
+        .filter(Boolean);
+    };
 
     const updatedMedicine = await Medicine.findByIdAndUpdate(
-      id, 
+      id,
       {
-        name: medicineName,
-        package_description: packageDescription,
-        type: medicineType,
+        name: name,
+        package_description: package_description,
+        type: type,
         stock: stock,
         prescription_type: prescription_type,
         status: status,
         manufacturer: {
-          name: manufacturer.label,
+          name: manufacturer.name,
           address: manufacturer.address,
           country: manufacturer.country,
           customer_care_email: manufacturer.customer_care_email,
         },
         pricing: {
-          mrp: mrp,
-          discount: discount,
-          quantity: quantity,
-          mrp_per_unit: mrp_per_unit,
-          unit: unitValue,
+          mrp: pricing.mrp,
+          discount: pricing.discount,
+          quantity: pricing.quantity,
+          mrp_per_unit: pricing.mrp_per_unit,
+          unit: pricing.unit,
           return_policy: {
-            returnable: return_policy,
-            open_box: open_box,
+            returnable: pricing.return_policy.returnable,
+            open_box: pricing.return_policy.open_box,
+            return_window: pricing.return_policy.return_window,
           },
         },
         molecule_details: {
-          salt_molecule: salt_moleculeValue,
-          therapeutic_classification: therapeutic_classification,
-          therapeutic_uses: therapeutic_uses,
+          salt_molecule: molecule_details.salt_molecule,
+          therapeutic_classification:
+            molecule_details.therapeutic_classification,
+          therapeutic_uses: molecule_details.therapeutic_uses,
         },
+        variants: validatedVariants,
         faq: {
           faq_description: description,
           author_details: author_details,
@@ -322,21 +331,25 @@ export const updateMedicine = async (req, res) => {
           reference: reference,
           question_answers: faqs,
         },
-        images: images.map(image => ({
-          url: image.url, 
-        })),
+        images: processImages(images),
       },
-      { new: true } 
+      { new: true }
     );
 
     if (!updatedMedicine) {
       return res.status(404).json({ message: "Medicine not found" });
     }
 
-    res.status(200).json({ message: "Medicine updated successfully", updatedMedicine,success:true });
+    res.status(200).json({
+      message: "Medicine updated successfully",
+      updatedMedicine,
+      success: true,
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error updating medicine", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error updating medicine", error: err.message });
   }
 };
 export const deleteMedicines = async (req, res) => {
@@ -369,6 +382,3 @@ export const deleteMedicines = async (req, res) => {
     });
   }
 };
-
-
-
